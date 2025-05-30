@@ -7,12 +7,14 @@ import 'package:news_app/models/news_model.dart';
 class NewsController extends GetxController {
   var news = <Article>[].obs;
 
-  final String apiKey = 'your_api_key_here';
+ final String apiKey = 'f1146588faa247d192a0f6b2402d31b9';
+
 
   Future<void> getNews() async {
     try {
       var uri = Uri.parse(
-        "https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=$apiKey",
+       "https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=$apiKey"
+,
       );
 
       final response = await http.get(uri);
