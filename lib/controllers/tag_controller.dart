@@ -1,6 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:news_app/models/news_model.dart';
+
 class TagController extends GetxController {
+  var isLoading = false.obs;
+  var tagNews = <Article>[].obs;
+   final String apiKey = 'f1146588faa247d192a0f6b2402d31b9';
   var tags =
       [
         "all categories",
@@ -16,5 +23,35 @@ class TagController extends GetxController {
   void updateSelectedTag(String tag) {
     selectedTag.value = tag;
     debugPrint("Selected Tag: ${selectedTag.value}");
+  }
+  Future<void>getTags(String tag)async{
+    try{
+      isLoading.value=true;
+      selectedTag.value=tag;
+      var url="https://newsapi.org/v2/top-headlines?category=$tag&apiKey=$apiKey";
+      var uri=Uri.parse(url);
+      var response=await http.get(uri);
+      if (response.statusCode==200){
+        final jasonResponse = jsonDecode(response.body);
+        debugPrint("this is the response of the tags:$jasonResponse");
+        final newsResponse = NewsResponse.fromJson(jasonResponse);
+        tagNews.value = newsResponse.articles;
+        isLoading.value = false;
+      }
+      else{
+        isLoading.value=false;
+        debugPrint("this is the response ${response.body}");
+      }
+    }
+    catch (e) {
+      isLoading.value = false;
+
+      debugPrint("this is the error $e");
+    }
+  }
+   @override
+  void onInit() {
+    getTags("all categories");
+    super.onInit();
   }
 }
